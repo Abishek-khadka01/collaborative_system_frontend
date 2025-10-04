@@ -1,0 +1,33 @@
+# Ignore build output
+build/
+dist/
+out/
+
+# Ignore node modules
+node_modules/
+
+# Ignore coverage reports
+coverage/
+
+# Ignore environment files
+.env
+.env.*
+
+# Ignore log files
+*.log
+
+# Ignore editor directories and files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Ignore public assets (optional)
+public/
+
+# Ignore specific config files (optional)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+

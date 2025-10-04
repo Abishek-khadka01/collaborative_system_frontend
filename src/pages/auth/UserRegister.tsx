@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Joi from "joi";
+import { useThemeStore } from "../../stores/ThemeStore"; 
 
 // Joi validation schema
 const schema = Joi.object({
@@ -18,7 +19,6 @@ const schema = Joi.object({
   }),
 });
 
-// Types
 interface FormValues {
   email: string;
   username: string;
@@ -33,6 +33,7 @@ interface Errors {
 
 const UserRegister: React.FC = () => {
   const navigate = useNavigate();
+  const { theme } = useThemeStore(); // theme state
 
   const [values, setValues] = useState<FormValues>({
     email: "",
@@ -50,7 +51,7 @@ const UserRegister: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const { error }  = schema.validate(values, { abortEarly: false });
+    const { error } = schema.validate(values, { abortEarly: false });
     if (error) {
       const fieldErrors: Errors = {};
       error.details.forEach(detail => {
@@ -63,38 +64,33 @@ const UserRegister: React.FC = () => {
     setErrors({});
     setSubmitting(true);
     try {
-      // Handle registration logic here
+      // Handle registration logic here (API call)
       navigate("/login");
-    } catch {
-      // Handle server errors
     } finally {
       setSubmitting(false);
     }
   };
 
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="w-full max-w-md bg-white p-8 rounded shadow">
-        <h2 className="text-2xl font-bold mb-6 text-center">Create your account</h2>
-        <form className="space-y-5" onSubmit={handleSubmit} noValidate>
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-              Email
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              autoComplete="email"
-              value={values.email}
-              onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-            />
-            {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
-          </div>
+  // Theme-based classes
+  const bgColor = theme === "light" ? "bg-gray-50" : "bg-gray-900";
+  const cardBg = theme === "light" ? "bg-white" : "bg-gray-800";
+  const textColor = theme === "light" ? "text-gray-700" : "text-white";
+  const inputBg = theme === "light" ? "bg-white" : "bg-gray-700";
+  const inputBorder = theme === "light" ? "border-gray-300" : "border-gray-600";
+  const inputText = theme === "light" ? "text-gray-700" : "text-white";
+  const buttonBg = theme === "light" ? "bg-indigo-600" : "bg-indigo-700";
+  const buttonHover = theme === "light" ? "hover:bg-indigo-700" : "hover:bg-indigo-600";
+  const linkColor = theme === "light" ? "text-indigo-600 hover:text-indigo-500" : "text-indigo-400 hover:text-indigo-300";
 
+  return (
+    <div className={`min-h-screen flex items-center justify-center ${bgColor}`}>
+      <div className={`w-full max-w-md p-8 rounded shadow ${cardBg}`}>
+        <h2 className={`text-2xl font-bold mb-6 text-center ${textColor}`}>Create your account</h2>
+        <form className="space-y-5" onSubmit={handleSubmit} noValidate>
+          
+          {/* Username */}
           <div>
-            <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="username" className={`block text-sm font-medium ${textColor}`}>
               Username
             </label>
             <input
@@ -104,13 +100,33 @@ const UserRegister: React.FC = () => {
               autoComplete="username"
               value={values.username}
               onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              className={`mt-1 block w-full px-3 py-2 border ${inputBorder} rounded ${inputBg} ${inputText} focus:outline-none focus:ring-indigo-500 focus:border-indigo-500`}
             />
             {errors.username && <p className="text-red-500 text-xs mt-1">{errors.username}</p>}
           </div>
 
+          {/* Email */}
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="email" className={`block text-sm font-medium ${textColor}`}>
+              Email
+            </label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              autoComplete="email"
+              value={values.email}
+              onChange={handleChange}
+              className={`mt-1 block w-full px-3 py-2 border ${inputBorder} rounded ${inputBg} ${inputText} focus:outline-none focus:ring-indigo-500 focus:border-indigo-500`}
+            />
+            {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+          </div>
+
+        
+
+          {/* Password */}
+          <div>
+            <label htmlFor="password" className={`block text-sm font-medium ${textColor}`}>
               Password
             </label>
             <input
@@ -120,23 +136,24 @@ const UserRegister: React.FC = () => {
               autoComplete="new-password"
               value={values.password}
               onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              className={`mt-1 block w-full px-3 py-2 border ${inputBorder} rounded ${inputBg} ${inputText} focus:outline-none focus:ring-indigo-500 focus:border-indigo-500`}
             />
             {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
           </div>
 
+          {/* Submit Button */}
           <button
             type="submit"
             disabled={submitting}
-            className="w-full flex justify-center py-2 px-4 border border-transparent rounded bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition"
+            className={`w-full flex justify-center py-2 px-4 rounded ${buttonBg} text-white font-semibold ${buttonHover} transition`}
           >
             Sign Up
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-gray-600">
+        <p className={`mt-6 text-center text-sm ${textColor}`}>
           Already have an account?{" "}
-          <Link to="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
+          <Link to="/login" className={`font-medium ${linkColor}`}>
             Sign in
           </Link>
         </p>
