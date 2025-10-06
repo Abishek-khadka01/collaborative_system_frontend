@@ -1,33 +1,117 @@
-
 import React, { useEffect, useRef, useState } from "react";
 import ReactQuill, { Quill } from "react-quill";
 import QuillResizeImage from "quill-resize-image";
+import QuillCursors from "quill-cursors";
 import "react-quill/dist/quill.snow.css";
+
 import DocumentToolbar from "./DocNavbar";
 import { useThemeStore } from "../../stores/ThemeStore";
+import { useUserStore } from "../../stores/UserStore";
 
+import * as Y from "yjs";
+import { WebsocketProvider } from "y-websocket";
+import { QuillBinding } from "y-quill";
+import { IndexeddbPersistence } from "y-indexeddb";
+
+// Register Quill modules
 Quill.register("modules/imageResize", QuillResizeImage);
+Quill.register("modules/cursors", QuillCursors);
+
+interface AwarenessUser {
+  name: string;
+  color: string;
+}
 
 const DocPage: React.FC = () => {
+  const roomName = "my-room-name";
+  const { user } = useUserStore();
   const { theme } = useThemeStore();
   const [content, setContent] = useState<string>("Start Typing");
-  const [deltaContent, setDeltaContent] = useState<any>(null);
   const [fontSize, setFontSize] = useState<string>("text-base");
-  const quillRef = useRef<ReactQuill>(null);
 
+  // Typed refs
+  const quillRef = useRef<ReactQuill | null>(null);
+  const ydocRef = useRef<Y.Doc>(new Y.Doc());
+  const providerRef = useRef<WebsocketProvider | null>(null);
+
+  // Yjs shared text
+  const yText = ydocRef.current.getText("quill");
+
+  // Setup Yjs WebSocket + IndexedDB (runs once)
   useEffect(() => {
-    try {
-      setDeltaContent(content);
-    } catch (err) {
-      console.error("Error converting HTML to Delta:", err);
-    }
-  }, [content]);
+    const doc = ydocRef.current;
 
-  const handleFontSizeChange = (size: string) => {
-    setFontSize(size);
-  };
+    const provider = new WebsocketProvider(
+      "ws://localhost:4000",
+      roomName,
+      doc
+    );
+    providerRef.current = provider;
 
-  const modules = {
+    provider.on("status", (event: { status: string }) => {
+      console.log(`WebSocket status: ${event.status}`);
+    });
+
+    // Set local user presence
+    const awareness = provider.awareness;
+    awareness.setLocalStateField("user", {
+      name: user?.username || "Abishek Khadka",
+      color: randomHexColor(),
+    } as AwarenessUser);
+
+    // IndexedDB persistence
+    const persistence = new IndexeddbPersistence(roomName, doc);
+    persistence.once("synced", () => {
+      console.log("IndexedDB synced ✅");
+    });
+
+    return () => {
+      provider.disconnect();
+      doc.destroy();
+    };
+  }, [roomName, user?.username]);
+
+  // Bind Quill with Yjs and show awareness cursors
+  useEffect(() => {
+    if (!quillRef.current || !providerRef.current) return;
+
+    const editor = quillRef.current.getEditor();
+    const provider = providerRef.current;
+    const awareness = provider.awareness;
+
+    // Bind shared Y.Text to Quill
+    const binding = new QuillBinding(yText, editor, awareness);
+
+    // Quill cursors module
+    const cursors : any = editor.getModule("cursors");
+
+    // Render remote users
+    const renderRemoteCursors = () => {
+      cursors.clearCursors();
+      awareness.getStates().forEach((state, clientId) => {
+        const userInfo = (state as any).user as AwarenessUser | undefined;
+        if (!userInfo) return;
+
+        // Show only remote users
+        if (clientId !== awareness.clientID) {
+          cursors.createCursor(String(clientId), userInfo.name, userInfo.color);
+        } else {
+         
+        }
+      });
+    };
+
+    awareness.on("update", renderRemoteCursors);
+
+    return () => {
+      binding.destroy();
+      awareness.off("update", renderRemoteCursors);
+      cursors.clearCursors();
+    };
+  }, [quillRef.current, providerRef.current]);
+
+  // Quill modules
+  const modules= {
     toolbar: [
       [{ size: ["small", false, "large", "huge"] }],
       ["bold", "italic", "underline", "strike"],
@@ -45,28 +129,7 @@ const DocPage: React.FC = () => {
     ],
     clipboard: { matchVisual: false },
     imageResize: { modules: ["Resize", "DisplaySize", "Toolbar"] },
-  };
-
-  const handleImageUpload = () => {
-    const input = document.createElement("input");
-    input.setAttribute("type", "file");
-    input.setAttribute("accept", "image/*");
-    input.click();
-
-    input.onchange = async () => {
-      if (!input.files) return;
-      const file = input.files[0];
-      const reader = new FileReader();
-      reader.onload = () => {
-        const range = quillRef.current?.getEditor().getSelection();
-        if (range) {
-          quillRef.current
-            ?.getEditor()
-            .insertEmbed(range.index, "image", reader.result);
-        }
-      };
-      reader.readAsDataURL(file);
-    };
+    cursors: true,
   };
 
   return (
@@ -94,11 +157,17 @@ const DocPage: React.FC = () => {
           `}
         />
       </div>
-
-      
     </div>
   );
 };
 
-export default DocPage;
+function randomHexColor(): string {
+ 
+  const red = Math.floor(Math.random() * 256).toString(16).padStart(2, '0');
+  const green = Math.floor(Math.random() * 256).toString(16).padStart(2, '0');
+  const blue = Math.floor(Math.random() * 256).toString(16).padStart(2, '0');
+  
+  return `#${red}${green}${blue}`;
+}
 
+export default DocPage;
