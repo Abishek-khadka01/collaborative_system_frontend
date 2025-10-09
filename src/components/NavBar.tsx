@@ -22,7 +22,9 @@ const NavBar: React.FC = () => {
       {/* Left: Logo and Title */}
       <div className="flex items-center space-x-3 transition-colors duration-500 ease-in-out">
         <img src="/logo.png" alt="Logo" className="h-10 w-10 object-contain" />
-        <span className={`text-2xl font-bold ${textColor} transition-colors duration-500 ease-in-out`}>
+        <span
+          className={`text-2xl font-bold ${textColor} transition-colors duration-500 ease-in-out`}
+        >
           CollabSystem
         </span>
       </div>
@@ -85,9 +87,15 @@ const NavBar: React.FC = () => {
               <button
                 className={`flex flex-col justify-center items-center w-12 h-12 rounded-full ${hoverBg} focus:outline-none transition-colors duration-500 ease-in-out`}
               >
-                <span className={`block w-6 h-0.5 ${textColor} mb-1 transition-colors duration-500 ease-in-out`}></span>
-                <span className={`block w-6 h-0.5 ${textColor} mb-1 transition-colors duration-500 ease-in-out`}></span>
-                <span className={`block w-6 h-0.5 ${textColor} transition-colors duration-500 ease-in-out`}></span>
+                <span
+                  className={`block w-6 h-0.5 ${textColor} mb-1 transition-colors duration-500 ease-in-out`}
+                ></span>
+                <span
+                  className={`block w-6 h-0.5 ${textColor} mb-1 transition-colors duration-500 ease-in-out`}
+                ></span>
+                <span
+                  className={`block w-6 h-0.5 ${textColor} transition-colors duration-500 ease-in-out`}
+                ></span>
               </button>
 
               {/* Dropdown */}

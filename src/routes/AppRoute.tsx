@@ -11,18 +11,15 @@ import { DummyFileHeader } from '../components/FileShow';
 export default function AppRoute() {
   return (
     <Routes>
-    
-      <Route path='/' element={<AuthRoute/>} errorElement= {<ErrorPage/>}>
-        <Route path='/register' element={<UserRegister/>}></Route>
+      <Route path="/" element={<AuthRoute />} errorElement={<ErrorPage />}>
+        <Route path="/register" element={<UserRegister />}></Route>
         <Route path="/" element={<DocPage />}></Route>
         <Route path="/login" element={<UserLogin />}></Route>
-      <Route path="/navbar" element={<NavBar />}></Route>
-      <Route path='/doc-navbar' element={<DocumentNavbar/>}></Route>
-      
-
+        <Route path="/navbar" element={<NavBar />}></Route>
+        <Route path="/doc-navbar" element={<DocumentNavbar />}></Route>
       </Route>
 
-      <Route path='/check' element={<DummyFileHeader/>}></Route>
+      <Route path="/check" element={<DummyFileHeader />}></Route>
     </Routes>
   );
 }

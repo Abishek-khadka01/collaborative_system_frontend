@@ -16,7 +16,7 @@ axios.interceptors.request.use(
 axios.interceptors.response.use(
   response => response,
   error => {
-    if (error.response && error.response.status === 401) {
+    if (error.response && error.response.status === 400) {
       window.location.href = '/login';
     }
     return Promise.reject(error);

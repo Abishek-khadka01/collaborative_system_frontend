@@ -1,32 +1,35 @@
-import React, { useEffect, useRef, useState } from "react";
-import { useThemeStore } from "../../stores/ThemeStore";
+import React, { useEffect, useRef, useState } from 'react';
+import { useThemeStore } from '../../stores/ThemeStore';
 
 const onlineMembers = [
-  { id: 1, username: "Alice", avatar: "https://t4.ftcdn.net/jpg/16/90/93/63/240_F_1690936360_j3C0S6h9mMYDVmezy3EOHkPakUZmjfxw.jpg" },
-  { id: 2, username: "Bob", avatar: "/avatars/bob.png" },
-  { id: 3, username: "Charlie", avatar: "/avatars/charlie.png" },
-  { id: 4, username: "David", avatar: "/avatars/david.png" },
-  { id: 5, username: "Eva", avatar: "/avatars/eva.png" },
+  {
+    id: 1,
+    username: 'Alice',
+    avatar:
+      'https://t4.ftcdn.net/jpg/16/90/93/63/240_F_1690936360_j3C0S6h9mMYDVmezy3EOHkPakUZmjfxw.jpg',
+  },
+  { id: 2, username: 'Bob', avatar: '/avatars/bob.png' },
+  { id: 3, username: 'Charlie', avatar: '/avatars/charlie.png' },
+  { id: 4, username: 'David', avatar: '/avatars/david.png' },
+  { id: 5, username: 'Eva', avatar: '/avatars/eva.png' },
 ];
 
 const DocumentToolbar: React.FC = () => {
   const { theme } = useThemeStore();
   const [showMembersDropdown, setShowMembersDropdown] = useState(false);
-  const [fileName, setFileName] = useState("MyDocument.txt");
+  const [fileName, setFileName] = useState('MyDocument.txt');
   const [editingName, setEditingName] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const membersRef = useRef<HTMLDivElement | null>(null);
 
-  const bgColor = theme === "light" ? "bg-white" : "bg-gray-900";
-  const textColor = theme === "light" ? "text-gray-800" : "text-gray-100";
-  const iconColor = theme === "light" ? "text-gray-800" : "text-gray-100";
-  const hoverBg = theme === "light" ? "hover:bg-gray-100" : "hover:bg-gray-800";
-  const plusBg = theme === "light" ? "bg-gray-300" : "bg-gray-600";
-  const tooltipBg =
-    theme === "light" ? "bg-gray-800 text-white" : "bg-gray-700 text-white";
-  const itemHoverBg =
-    theme === "light" ? "hover:bg-gray-100" : "hover:bg-gray-800";
-  const transitionAll = "transition-colors duration-500 ease-in-out";
+  const bgColor = theme === 'light' ? 'bg-white' : 'bg-gray-900';
+  const textColor = theme === 'light' ? 'text-gray-800' : 'text-gray-100';
+  const iconColor = theme === 'light' ? 'text-gray-800' : 'text-gray-100';
+  const hoverBg = theme === 'light' ? 'hover:bg-gray-100' : 'hover:bg-gray-800';
+  const plusBg = theme === 'light' ? 'bg-gray-300' : 'bg-gray-600';
+  const tooltipBg = theme === 'light' ? 'bg-gray-800 text-white' : 'bg-gray-700 text-white';
+  const itemHoverBg = theme === 'light' ? 'hover:bg-gray-100' : 'hover:bg-gray-800';
+  const transitionAll = 'transition-colors duration-500 ease-in-out';
 
   useEffect(() => {
     if (editingName && inputRef.current) {
@@ -37,17 +40,14 @@ const DocumentToolbar: React.FC = () => {
 
   useEffect(() => {
     const onClickOutside = (e: MouseEvent) => {
-      if (
-        membersRef.current &&
-        !membersRef.current.contains(e.target as Node)
-      ) {
+      if (membersRef.current && !membersRef.current.contains(e.target as Node)) {
         setShowMembersDropdown(false);
       }
     };
     if (showMembersDropdown) {
-      document.addEventListener("mousedown", onClickOutside);
+      document.addEventListener('mousedown', onClickOutside);
     }
-    return () => document.removeEventListener("mousedown", onClickOutside);
+    return () => document.removeEventListener('mousedown', onClickOutside);
   }, [showMembersDropdown]);
 
   const displayedMembers = onlineMembers.slice(0, 3);
@@ -55,7 +55,7 @@ const DocumentToolbar: React.FC = () => {
 
   const toolbarButtons = [
     {
-      name: "Rename",
+      name: 'Rename',
       onClick: () => setEditingName(true),
       icon: (
         <svg
@@ -77,8 +77,8 @@ const DocumentToolbar: React.FC = () => {
       ),
     },
     {
-      name: "Save",
-      onClick: () => alert("Save action (dummy)"),
+      name: 'Save',
+      onClick: () => alert('Save action (dummy)'),
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -93,8 +93,8 @@ const DocumentToolbar: React.FC = () => {
       ),
     },
     {
-      name: "Make Admin",
-      onClick: () => alert("Make Admin action (dummy)"),
+      name: 'Make Admin',
+      onClick: () => alert('Make Admin action (dummy)'),
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -115,8 +115,8 @@ const DocumentToolbar: React.FC = () => {
       ),
     },
     {
-      name: "Add Members",
-      onClick: () => alert("Add Members clicked"),
+      name: 'Add Members',
+      onClick: () => alert('Add Members clicked'),
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -131,8 +131,8 @@ const DocumentToolbar: React.FC = () => {
       ),
     },
     {
-      name: "Members",
-      onClick: () => setShowMembersDropdown((s) => !s),
+      name: 'Members',
+      onClick: () => setShowMembersDropdown(s => !s),
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -152,8 +152,8 @@ const DocumentToolbar: React.FC = () => {
       ),
     },
     {
-      name: "Convert to PDF",
-      onClick: () => alert("Convert to PDF clicked"),
+      name: 'Convert to PDF',
+      onClick: () => alert('Convert to PDF clicked'),
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -177,7 +177,7 @@ const DocumentToolbar: React.FC = () => {
   ];
 
   const handleFileNameKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" || e.key === "Escape") {
+    if (e.key === 'Enter' || e.key === 'Escape') {
       setEditingName(false);
     }
   };
@@ -187,15 +187,13 @@ const DocumentToolbar: React.FC = () => {
       className={`flex items-center justify-between px-4 py-2 ${bgColor} shadow-md ${transitionAll}`}
     >
       <div className="flex items-center gap-2">
-        {toolbarButtons.map((btn) => (
+        {toolbarButtons.map(btn => (
           <button
             key={btn.name}
             onClick={btn.onClick}
             className={`group flex flex-col items-center gap-1 p-2 rounded ${hoverBg} ${transitionAll}`}
           >
-            <div className={`${iconColor} ${transitionAll} transform`}>
-              {btn.icon}
-            </div>
+            <div className={`${iconColor} ${transitionAll} transform`}>{btn.icon}</div>
             <span
               className={`${textColor} mt-1 text-xs text-center opacity-0 group-hover:opacity-100 ${transitionAll}`}
             >
@@ -210,11 +208,11 @@ const DocumentToolbar: React.FC = () => {
           <input
             ref={inputRef}
             value={fileName}
-            onChange={(e) => setFileName(e.target.value)}
+            onChange={e => setFileName(e.target.value)}
             onKeyDown={handleFileNameKey}
             onBlur={() => setEditingName(false)}
             className={`text-center w-[200px] px-2 py-1 rounded border focus:outline-none
-              ${theme === "light" ? "bg-white text-black border-black" : "bg-gray-700 text-white border-gray-100"}
+              ${theme === 'light' ? 'bg-white text-black border-black' : 'bg-gray-700 text-white border-gray-100'}
               ${transitionAll}`}
           />
         ) : (
@@ -228,7 +226,7 @@ const DocumentToolbar: React.FC = () => {
       </div>
 
       <div className="flex items-center gap-2">
-        {displayedMembers.map((m) => (
+        {displayedMembers.map(m => (
           <div key={m.id} className="relative group">
             <img
               src={m.avatar}
@@ -246,7 +244,7 @@ const DocumentToolbar: React.FC = () => {
         {extraCount > 0 && (
           <div className="relative" ref={membersRef}>
             <button
-              onClick={() => setShowMembersDropdown((s) => !s)}
+              onClick={() => setShowMembersDropdown(s => !s)}
               className={`h-8 w-8 flex items-center justify-center rounded-full ${plusBg} text-white text-xs ${transitionAll}`}
             >
               +{extraCount}
@@ -256,7 +254,7 @@ const DocumentToolbar: React.FC = () => {
                 className={`absolute right-0 mt-2 w-56 ${bgColor} shadow-lg rounded-md p-2 ${transitionAll} z-50`}
               >
                 <div className="max-h-64 overflow-auto">
-                  {onlineMembers.map((member) => (
+                  {onlineMembers.map(member => (
                     <div
                       key={member.id}
                       className={`flex items-center gap-2 px-2 py-1 rounded ${itemHoverBg} cursor-pointer ${transitionAll}`}

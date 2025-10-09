@@ -26,7 +26,7 @@ export const useThemeStore = create<ThemeStoreState>()(
       reset: () => set(initialState),
     }),
     {
-      name: 'theme-storage', 
+      name: 'theme-storage',
     }
   )
 );

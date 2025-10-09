@@ -1,5 +1,5 @@
-import React from "react";
-import { useThemeStore } from "../stores/ThemeStore";
+import React from 'react';
+import { useThemeStore } from '../stores/ThemeStore';
 
 interface Member {
   id: number;
@@ -13,19 +13,14 @@ interface FileHeaderProps {
   createdAt: string;
 }
 
-const FileHeader: React.FC<FileHeaderProps> = ({
-  fileName,
-  members,
-  createdAt,
-}) => {
+const FileHeader: React.FC<FileHeaderProps> = ({ fileName, members, createdAt }) => {
   const { theme } = useThemeStore();
 
-  const bgColor = theme === "light" ? "bg-gray-100" : "bg-gray-900";
-  const textColor = theme === "light" ? "text-gray-800" : "text-white";
-  const borderColor = theme === "light" ? "border-gray-300" : "border-white";
-  const tooltipBg =
-    theme === "light" ? "bg-gray-800 text-white" : "bg-gray-100 text-gray-900";
-  const transitionAll = "transition-colors duration-300 ease-in-out";
+  const bgColor = theme === 'light' ? 'bg-gray-100' : 'bg-gray-900';
+  const textColor = theme === 'light' ? 'text-gray-800' : 'text-white';
+  const borderColor = theme === 'light' ? 'border-gray-300' : 'border-white';
+  const tooltipBg = theme === 'light' ? 'bg-gray-800 text-white' : 'bg-gray-100 text-gray-900';
+  const transitionAll = 'transition-colors duration-300 ease-in-out';
 
   return (
     <div
@@ -36,12 +31,12 @@ const FileHeader: React.FC<FileHeaderProps> = ({
 
       {/* Members */}
       <div className="flex items-center space-x-2">
-        {members.map((member) => (
+        {members.map(member => (
           <div key={member.id} className="relative group flex flex-col items-center">
             <img
               src={member.avatar}
               alt={member.username}
-              className={`h-8 w-8 rounded-full object-cover border-2 ${theme === "light" ? "border-gray-300" : "border-white"} ${transitionAll}`}
+              className={`h-8 w-8 rounded-full object-cover border-2 ${theme === 'light' ? 'border-gray-300' : 'border-white'} ${transitionAll}`}
             />
             <div
               className={`absolute top-full mt-2 px-2 py-1 text-xs rounded ${tooltipBg} opacity-0 group-hover:opacity-100 pointer-events-none ${transitionAll}`}
@@ -61,19 +56,13 @@ const FileHeader: React.FC<FileHeaderProps> = ({
 // Dummy usage
 const DummyFileHeader: React.FC = () => {
   const dummyMembers: Member[] = [
-    { id: 1, username: "Alice", avatar: "https://i.pravatar.cc/150?img=1" },
-    { id: 2, username: "Bob", avatar: "https://i.pravatar.cc/150?img=2" },
-    { id: 3, username: "Charlie", avatar: "https://i.pravatar.cc/150?img=3" },
-    { id: 4, username: "David", avatar: "https://i.pravatar.cc/150?img=4" },
+    { id: 1, username: 'Alice', avatar: 'https://i.pravatar.cc/150?img=1' },
+    { id: 2, username: 'Bob', avatar: 'https://i.pravatar.cc/150?img=2' },
+    { id: 3, username: 'Charlie', avatar: 'https://i.pravatar.cc/150?img=3' },
+    { id: 4, username: 'David', avatar: 'https://i.pravatar.cc/150?img=4' },
   ];
 
-  return (
-    <FileHeader
-      fileName="MyDocument.txt"
-      members={dummyMembers}
-      createdAt="Oct 4, 2025"
-    />
-  );
+  return <FileHeader fileName="MyDocument.txt" members={dummyMembers} createdAt="Oct 4, 2025" />;
 };
 
 export { FileHeader, DummyFileHeader };

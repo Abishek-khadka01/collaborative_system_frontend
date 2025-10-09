@@ -1,21 +1,24 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import Joi from "joi";
-import { useThemeStore } from "../../stores/ThemeStore"; 
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import Joi from 'joi';
+import { useThemeStore } from '../../stores/ThemeStore';
 
 // Joi validation schema
 const schema = Joi.object({
-  email: Joi.string().email({ tlds: { allow: false } }).required().messages({
-    "string.empty": "Email is required",
-    "string.email": "Enter a valid email address",
-  }),
+  email: Joi.string()
+    .email({ tlds: { allow: false } })
+    .required()
+    .messages({
+      'string.empty': 'Email is required',
+      'string.email': 'Enter a valid email address',
+    }),
   username: Joi.string().min(3).required().messages({
-    "string.empty": "Username is required",
-    "string.min": "Username must be at least 3 characters",
+    'string.empty': 'Username is required',
+    'string.min': 'Username must be at least 3 characters',
   }),
   password: Joi.string().min(6).required().messages({
-    "string.empty": "Password is required",
-    "string.min": "Password must be at least 6 characters",
+    'string.empty': 'Password is required',
+    'string.min': 'Password must be at least 6 characters',
   }),
 });
 
@@ -36,9 +39,9 @@ const UserRegister: React.FC = () => {
   const { theme } = useThemeStore(); // theme state
 
   const [values, setValues] = useState<FormValues>({
-    email: "",
-    username: "",
-    password: "",
+    email: '',
+    username: '',
+    password: '',
   });
 
   const [errors, setErrors] = useState<Errors>({});
@@ -65,29 +68,31 @@ const UserRegister: React.FC = () => {
     setSubmitting(true);
     try {
       // Handle registration logic here (API call)
-      navigate("/login");
+      navigate('/login');
     } finally {
       setSubmitting(false);
     }
   };
 
   // Theme-based classes
-  const bgColor = theme === "light" ? "bg-gray-50" : "bg-gray-900";
-  const cardBg = theme === "light" ? "bg-white" : "bg-gray-800";
-  const textColor = theme === "light" ? "text-gray-700" : "text-white";
-  const inputBg = theme === "light" ? "bg-white" : "bg-gray-700";
-  const inputBorder = theme === "light" ? "border-gray-300" : "border-gray-600";
-  const inputText = theme === "light" ? "text-gray-700" : "text-white";
-  const buttonBg = theme === "light" ? "bg-indigo-600" : "bg-indigo-700";
-  const buttonHover = theme === "light" ? "hover:bg-indigo-700" : "hover:bg-indigo-600";
-  const linkColor = theme === "light" ? "text-indigo-600 hover:text-indigo-500" : "text-indigo-400 hover:text-indigo-300";
+  const bgColor = theme === 'light' ? 'bg-gray-50' : 'bg-gray-900';
+  const cardBg = theme === 'light' ? 'bg-white' : 'bg-gray-800';
+  const textColor = theme === 'light' ? 'text-gray-700' : 'text-white';
+  const inputBg = theme === 'light' ? 'bg-white' : 'bg-gray-700';
+  const inputBorder = theme === 'light' ? 'border-gray-300' : 'border-gray-600';
+  const inputText = theme === 'light' ? 'text-gray-700' : 'text-white';
+  const buttonBg = theme === 'light' ? 'bg-indigo-600' : 'bg-indigo-700';
+  const buttonHover = theme === 'light' ? 'hover:bg-indigo-700' : 'hover:bg-indigo-600';
+  const linkColor =
+    theme === 'light'
+      ? 'text-indigo-600 hover:text-indigo-500'
+      : 'text-indigo-400 hover:text-indigo-300';
 
   return (
     <div className={`min-h-screen flex items-center justify-center ${bgColor}`}>
       <div className={`w-full max-w-md p-8 rounded shadow ${cardBg}`}>
         <h2 className={`text-2xl font-bold mb-6 text-center ${textColor}`}>Create your account</h2>
         <form className="space-y-5" onSubmit={handleSubmit} noValidate>
-          
           {/* Username */}
           <div>
             <label htmlFor="username" className={`block text-sm font-medium ${textColor}`}>
@@ -122,8 +127,6 @@ const UserRegister: React.FC = () => {
             {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
           </div>
 
-        
-
           {/* Password */}
           <div>
             <label htmlFor="password" className={`block text-sm font-medium ${textColor}`}>
@@ -152,7 +155,7 @@ const UserRegister: React.FC = () => {
         </form>
 
         <p className={`mt-6 text-center text-sm ${textColor}`}>
-          Already have an account?{" "}
+          Already have an account?{' '}
           <Link to="/login" className={`font-medium ${linkColor}`}>
             Sign in
           </Link>
