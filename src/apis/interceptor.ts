@@ -1,19 +1,27 @@
 import axios from 'axios';
+import { useUserStore } from '../stores/UserStore';
 
-axios.interceptors.request.use(
+// Create a dedicated axios instance
+const instance = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE_URL,
+  timeout: 10000,
+  headers: { 'Content-Type': 'application/json' },
+});
+
+// ✅ Safe: using Zustand's .getState() instead of calling the hook
+instance.interceptors.request.use(
   config => {
-    const token = localStorage.getItem('token');
+    const token = useUserStore.getState().user?.accessToken;
     if (token) {
-      if (config.headers) {
-        config.headers['Authorization'] = `Bearer ${token}`;
-      }
+      config.headers = config.headers || {};
+      config.headers['Authorization'] = `Bearer ${token}`;
     }
     return config;
   },
   error => Promise.reject(error)
 );
 
-axios.interceptors.response.use(
+instance.interceptors.response.use(
   response => response,
   error => {
     if (error.response && error.response.status === 400) {
@@ -23,10 +31,4 @@ axios.interceptors.response.use(
   }
 );
 
-axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
-  timeout: 10000,
-  headers: { 'Content-Type': 'application/json' },
-});
-
-export default axios;
+export default instance;

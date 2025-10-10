@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Joi from 'joi';
 import { useThemeStore } from '../../stores/ThemeStore';
-
+import axios from '../../apis/interceptor';
+import { REGISTER, USERS } from '../../apis/Endpoints';
 // Joi validation schema
 const schema = Joi.object({
   email: Joi.string()
@@ -52,7 +53,7 @@ const UserRegister: React.FC = () => {
     setValues(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const { error } = schema.validate(values, { abortEarly: false });
     if (error) {
@@ -67,8 +68,11 @@ const UserRegister: React.FC = () => {
     setErrors({});
     setSubmitting(true);
     try {
-      // Handle registration logic here (API call)
-      navigate('/login');
+      const response = await axios.post(`${USERS}${REGISTER}`, values);
+      if (response.status == 200) {
+        alert(`User registered Successfully`);
+        navigate('/login');
+      }
     } finally {
       setSubmitting(false);
     }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useUserStore } from '../stores/UserStore';
 import { useThemeStore } from '../stores/ThemeStore';
 import { Link } from 'react-router-dom';
@@ -6,6 +6,9 @@ import { Link } from 'react-router-dom';
 const NavBar: React.FC = () => {
   const { user, userLogout } = useUserStore();
   const { theme, toggleTheme } = useThemeStore();
+
+  // State to toggle hamburger dropdown
+  const [menuOpen, setMenuOpen] = useState(false);
 
   // Colors based on theme
   const bgColor = theme === 'light' ? 'bg-gray-200' : 'bg-gray-900';
@@ -16,8 +19,7 @@ const NavBar: React.FC = () => {
 
   return (
     <nav
-      className={`w-full flex items-center justify-between px-6 py-4 ${bgColor} ${navbarBorder} shadow-md
-        transition-colors duration-500 ease-in-out`}
+      className={`w-full flex items-center justify-between px-6 py-4 ${bgColor} ${navbarBorder} shadow-md transition-colors duration-500 ease-in-out`}
     >
       {/* Left: Logo and Title */}
       <div className="flex items-center space-x-3 transition-colors duration-500 ease-in-out">
@@ -30,7 +32,7 @@ const NavBar: React.FC = () => {
       </div>
 
       {/* Right: User Info and Menu */}
-      <div className="flex items-center space-x-4">
+      <div className="flex items-center space-x-4 relative">
         {/* Theme toggle */}
         <button
           onClick={toggleTheme}
@@ -69,7 +71,7 @@ const NavBar: React.FC = () => {
           )}
         </button>
 
-        {user.id && user ? (
+        {user?.id ? (
           <>
             <div className="flex items-center space-x-3 transition-colors duration-500 ease-in-out">
               <img
@@ -83,44 +85,46 @@ const NavBar: React.FC = () => {
             </div>
 
             {/* Hamburger Menu */}
-            <div className="relative group">
+            <div className="relative">
               <button
+                onClick={() => setMenuOpen(prev => !prev)}
                 className={`flex flex-col justify-center items-center w-12 h-12 rounded-full ${hoverBg} focus:outline-none transition-colors duration-500 ease-in-out`}
               >
-                <span
-                  className={`block w-6 h-0.5 ${textColor} mb-1 transition-colors duration-500 ease-in-out`}
-                ></span>
-                <span
-                  className={`block w-6 h-0.5 ${textColor} mb-1 transition-colors duration-500 ease-in-out`}
-                ></span>
-                <span
-                  className={`block w-6 h-0.5 ${textColor} transition-colors duration-500 ease-in-out`}
-                ></span>
+                <span className={`block w-6 h-0.5 ${textColor} mb-1`}></span>
+                <span className={`block w-6 h-0.5 ${textColor} mb-1`}></span>
+                <span className={`block w-6 h-0.5 ${textColor}`}></span>
               </button>
 
-              {/* Dropdown */}
-              <div
-                className={`absolute right-0 mt-2 w-44 ${bgColor} border ${theme === 'light' ? 'border-gray-400' : 'border-white'} rounded shadow-lg opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-all duration-500 ease-in-out z-50`}
-              >
-                <Link
-                  to="/profile"
-                  className={`block px-4 py-2 ${textColor} ${hoverBg} transition-colors duration-500 ease-in-out rounded-full`}
+              {/* Dropdown Menu */}
+              {menuOpen && (
+                <div
+                  className={`absolute right-0 mt-2 w-44 ${bgColor} border ${theme === 'light' ? 'border-gray-400' : 'border-white'} rounded shadow-lg z-50`}
                 >
-                  Profile
-                </Link>
-                <Link
-                  to="/settings"
-                  className={`block px-4 py-2 ${textColor} ${hoverBg} transition-colors duration-500 ease-in-out rounded-full`}
-                >
-                  Settings
-                </Link>
-                <button
-                  onClick={userLogout}
-                  className={`w-full text-left px-4 py-2 ${textColor} ${hoverBg} transition-colors duration-500 ease-in-out rounded-full`}
-                >
-                  Log out
-                </button>
-              </div>
+                  <Link
+                    to="/profile"
+                    className={`block px-4 py-2 ${textColor} ${hoverBg} transition-colors duration-500 ease-in-out rounded-full`}
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    Profile
+                  </Link>
+                  <Link
+                    to="/settings"
+                    className={`block px-4 py-2 ${textColor} ${hoverBg} transition-colors duration-500 ease-in-out rounded-full`}
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    Settings
+                  </Link>
+                  <button
+                    onClick={() => {
+                      userLogout();
+                      setMenuOpen(false);
+                    }}
+                    className={`w-full text-left px-4 py-2 ${textColor} ${hoverBg} transition-colors duration-500 ease-in-out rounded-full`}
+                  >
+                    Log out
+                  </button>
+                </div>
+              )}
             </div>
           </>
         ) : (

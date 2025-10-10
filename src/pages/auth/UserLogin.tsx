@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import Joi from 'joi';
+import Joi, { string } from 'joi';
 import { useThemeStore } from '../../stores/ThemeStore';
+import axios from '../../apis/interceptor';
+import { LOGIN, USERS } from '../../apis/Endpoints';
+import { useUserStore } from '../../stores/UserStore';
+import { useNavigate } from 'react-router-dom';
+import type { AxiosResponse } from 'axios';
 
 const schema = Joi.object({
   email: Joi.string()
@@ -18,13 +23,15 @@ const schema = Joi.object({
 });
 
 const UserLogin: React.FC = () => {
+  const userLogin = useUserStore(state => state.userLogin);
   const { theme } = useThemeStore();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const navigate = useNavigate();
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const { error } = schema.validate({ email, password }, { abortEarly: false });
     if (error) {
@@ -37,7 +44,27 @@ const UserLogin: React.FC = () => {
       return;
     }
     setErrors({});
-    // Handle login logic here
+    try {
+      const data = (await axios.post(`${USERS}${LOGIN}`, {
+        email,
+        password,
+      })) as AxiosResponseType;
+      console.table(data.data.data);
+      const { username, accessToken, email: Email, role, profilePicture, id } = data.data.data;
+      if (data.status == 200) {
+        userLogin({
+          username,
+          accessToken,
+          email: Email,
+          profilePicture,
+          id,
+        });
+        alert(`User Login is SuccessFul`);
+        navigate('/dashboard');
+      }
+    } catch (error) {
+      console.error(`Error in the user login ${error}`);
+    }
   };
 
   // Theme-based classes
@@ -116,4 +143,18 @@ const UserLogin: React.FC = () => {
   );
 };
 
+type ResponseType = {
+  id: string;
+  username: string;
+  accessToken: string;
+  email: string;
+  role: string;
+  profilePicture: string;
+};
+
+interface AxiosResponseType extends AxiosResponse {
+  data: {
+    data: ResponseType;
+  };
+}
 export default UserLogin;

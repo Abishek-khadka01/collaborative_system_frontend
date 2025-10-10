@@ -5,6 +5,7 @@ interface User {
   username: string | null;
   email: string | null;
   profilePicture: string | null;
+  accessToken: string | null;
 }
 
 interface UserStore {
@@ -18,6 +19,7 @@ const getInitialUser = (): User => ({
   username: null,
   email: null,
   profilePicture: null,
+  accessToken: null,
 });
 
 export const useUserStore = create<UserStore>(set => ({
@@ -29,6 +31,7 @@ export const useUserStore = create<UserStore>(set => ({
         username: userData.username,
         email: userData.email,
         profilePicture: userData.profilePicture,
+        accessToken: userData.accessToken,
       },
     }),
   userLogout: () => set({ user: getInitialUser() }),

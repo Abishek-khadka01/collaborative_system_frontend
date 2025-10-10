@@ -48,14 +48,12 @@ const DocPage: React.FC = () => {
       console.log(`WebSocket status: ${event.status}`);
     });
 
-    // Set local user presence
     const awareness = provider.awareness;
     awareness.setLocalStateField('user', {
       name: user?.username || 'Abishek Khadka',
       color: randomHexColor(),
     } as AwarenessUser);
 
-    // IndexedDB persistence
     const persistence = new IndexeddbPersistence(roomName, doc);
     persistence.once('synced', () => {
       console.log('IndexedDB synced ✅');
@@ -67,7 +65,6 @@ const DocPage: React.FC = () => {
     };
   }, [roomName, user?.username]);
 
-  // Bind Quill with Yjs and show awareness cursors
   useEffect(() => {
     if (!quillRef.current || !providerRef.current) return;
 
@@ -75,10 +72,8 @@ const DocPage: React.FC = () => {
     const provider = providerRef.current;
     const awareness = provider.awareness;
 
-    // Bind shared Y.Text to Quill
     const binding = new QuillBinding(yText, editor, awareness);
 
-    // Quill cursors module
     const cursors: any = editor.getModule('cursors');
 
     // Render remote users

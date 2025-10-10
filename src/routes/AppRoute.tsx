@@ -7,13 +7,15 @@ import NavBar from '../components/NavBar';
 import DocumentNavbar from '../pages/Docs/DocNavbar';
 import AuthRoute from './AuthRoute';
 import { DummyFileHeader } from '../components/FileShow';
+import LandingPage from '../pages/LandingPage';
 
 export default function AppRoute() {
   return (
     <Routes>
       <Route path="/" element={<AuthRoute />} errorElement={<ErrorPage />}>
         <Route path="/register" element={<UserRegister />}></Route>
-        <Route path="/" element={<DocPage />}></Route>
+        <Route path="/" element={<LandingPage />}></Route>
+        <Route path="/dashboard" element={<DocPage />}></Route>
         <Route path="/login" element={<UserLogin />}></Route>
         <Route path="/navbar" element={<NavBar />}></Route>
         <Route path="/doc-navbar" element={<DocumentNavbar />}></Route>
