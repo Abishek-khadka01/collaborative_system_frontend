@@ -24,6 +24,7 @@ const schema = Joi.object({
 
 const UserLogin: React.FC = () => {
   const userLogin = useUserStore(state => state.userLogin);
+
   const { theme } = useThemeStore();
 
   const [email, setEmail] = useState('');
@@ -51,6 +52,7 @@ const UserLogin: React.FC = () => {
       })) as AxiosResponseType;
       console.table(data.data.data);
       const { username, accessToken, email: Email, role, profilePicture, id } = data.data.data;
+
       if (data.status == 200) {
         userLogin({
           username,
@@ -60,6 +62,7 @@ const UserLogin: React.FC = () => {
           id,
         });
         alert(`User Login is SuccessFul`);
+
         navigate('/dashboard');
       }
     } catch (error) {

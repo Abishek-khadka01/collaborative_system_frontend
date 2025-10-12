@@ -8,7 +8,6 @@ const instance = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
-// ✅ Safe: using Zustand's .getState() instead of calling the hook
 instance.interceptors.request.use(
   config => {
     const token = useUserStore.getState().user?.accessToken;

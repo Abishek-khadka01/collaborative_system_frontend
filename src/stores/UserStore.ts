@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
 interface User {
   id: string | null;
@@ -22,17 +23,26 @@ const getInitialUser = (): User => ({
   accessToken: null,
 });
 
-export const useUserStore = create<UserStore>(set => ({
-  user: getInitialUser(),
-  userLogin: userData =>
-    set({
-      user: {
-        id: userData.id,
-        username: userData.username,
-        email: userData.email,
-        profilePicture: userData.profilePicture,
-        accessToken: userData.accessToken,
-      },
+export const useUserStore = create<UserStore>()(
+  persist(
+    set => ({
+      user: getInitialUser(),
+
+      userLogin: userData =>
+        set({
+          user: {
+            id: userData.id,
+            username: userData.username,
+            email: userData.email,
+            profilePicture: userData.profilePicture,
+            accessToken: userData.accessToken,
+          },
+        }),
+
+      userLogout: () => set({ user: getInitialUser() }),
     }),
-  userLogout: () => set({ user: getInitialUser() }),
-}));
+    {
+      name: 'user-storage',
+    }
+  )
+);

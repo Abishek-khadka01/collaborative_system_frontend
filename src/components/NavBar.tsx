@@ -2,15 +2,27 @@ import React, { useState } from 'react';
 import { useUserStore } from '../stores/UserStore';
 import { useThemeStore } from '../stores/ThemeStore';
 import { Link } from 'react-router-dom';
+import axios from '../apis/interceptor';
+import { LOGOUT, USERS } from '../apis/Endpoints';
 
 const NavBar: React.FC = () => {
   const { user, userLogout } = useUserStore();
   const { theme, toggleTheme } = useThemeStore();
 
-  // State to toggle hamburger dropdown
+  async function userLogOutAxios() {
+    try {
+      const data = await axios.put(`${USERS}${LOGOUT}`);
+      if (data.status === 200) {
+        userLogout();
+      }
+    } catch (err) {
+      console.error('Logout failed:', err);
+    }
+  }
+
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // Colors based on theme
+  // Theme colors
   const bgColor = theme === 'light' ? 'bg-gray-200' : 'bg-gray-900';
   const textColor = theme === 'light' ? 'text-gray-800' : 'text-gray-100';
   const buttonBg = theme === 'light' ? 'bg-gray-200' : 'bg-gray-800';
@@ -21,27 +33,23 @@ const NavBar: React.FC = () => {
     <nav
       className={`w-full flex items-center justify-between px-6 py-4 ${bgColor} ${navbarBorder} shadow-md transition-colors duration-500 ease-in-out`}
     >
-      {/* Left: Logo and Title */}
-      <div className="flex items-center space-x-3 transition-colors duration-500 ease-in-out">
+      {/* Left: Logo */}
+      <div className="flex items-center space-x-3">
         <img src="/logo.png" alt="Logo" className="h-10 w-10 object-contain" />
-        <span
-          className={`text-2xl font-bold ${textColor} transition-colors duration-500 ease-in-out`}
-        >
-          CollabSystem
-        </span>
+        <span className={`text-2xl font-bold ${textColor}`}>CollabSystem</span>
       </div>
 
-      {/* Right: User Info and Menu */}
+      {/* Right: User Info + Theme + Menu */}
       <div className="flex items-center space-x-4 relative">
         {/* Theme toggle */}
         <button
           onClick={toggleTheme}
-          className={`w-10 h-10 flex items-center justify-center rounded-full ${buttonBg} ${hoverBg} transition-colors duration-500 ease-in-out`}
+          className={`w-10 h-10 flex items-center justify-center rounded-full ${buttonBg} ${hoverBg}`}
         >
           {theme === 'light' ? (
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className={`h-6 w-6 ${textColor} transition-colors duration-500 ease-in-out`}
+              className={`h-6 w-6 ${textColor}`}
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -56,7 +64,7 @@ const NavBar: React.FC = () => {
           ) : (
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className={`h-6 w-6 ${textColor} transition-colors duration-500 ease-in-out`}
+              className={`h-6 w-6 ${textColor}`}
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -73,53 +81,58 @@ const NavBar: React.FC = () => {
 
         {user?.id ? (
           <>
-            <div className="flex items-center space-x-3 transition-colors duration-500 ease-in-out">
+            {/* User Info */}
+            <div className="flex items-center space-x-3">
               <img
                 src={user.profilePicture || '/default-avatar.png'}
                 alt="User Avatar"
                 className="h-10 w-10 rounded-full object-cover"
               />
-              <span className={`${textColor} transition-colors duration-500 ease-in-out`}>
-                {user.username}
-              </span>
+              <span className={textColor}>{user.username}</span>
             </div>
 
-            {/* Hamburger Menu */}
-            <div className="relative">
+            {/* Hamburger Button */}
+            <div className="relative z-50">
               <button
                 onClick={() => setMenuOpen(prev => !prev)}
-                className={`flex flex-col justify-center items-center w-12 h-12 rounded-full ${hoverBg} focus:outline-none transition-colors duration-500 ease-in-out`}
+                className={`flex flex-col justify-center items-center w-12 h-12 rounded-full ${hoverBg} focus:outline-none transition-all duration-300 ease-in-out`}
               >
-                <span className={`block w-6 h-0.5 ${textColor} mb-1`}></span>
-                <span className={`block w-6 h-0.5 ${textColor} mb-1`}></span>
-                <span className={`block w-6 h-0.5 ${textColor}`}></span>
+                <span
+                  className={`block w-6 h-0.5 ${theme === 'light' ? 'bg-gray-800' : 'bg-gray-100'} mb-1`}
+                ></span>
+                <span
+                  className={`block w-6 h-0.5 ${theme === 'light' ? 'bg-gray-800' : 'bg-gray-100'} mb-1`}
+                ></span>
+                <span
+                  className={`block w-6 h-0.5 ${theme === 'light' ? 'bg-gray-800' : 'bg-gray-100'}`}
+                ></span>
               </button>
 
-              {/* Dropdown Menu */}
+              {/* Dropdown */}
               {menuOpen && (
                 <div
                   className={`absolute right-0 mt-2 w-44 ${bgColor} border ${theme === 'light' ? 'border-gray-400' : 'border-white'} rounded shadow-lg z-50`}
                 >
                   <Link
                     to="/profile"
-                    className={`block px-4 py-2 ${textColor} ${hoverBg} transition-colors duration-500 ease-in-out rounded-full`}
+                    className={`block px-4 py-2 ${textColor} ${hoverBg}`}
                     onClick={() => setMenuOpen(false)}
                   >
                     Profile
                   </Link>
                   <Link
                     to="/settings"
-                    className={`block px-4 py-2 ${textColor} ${hoverBg} transition-colors duration-500 ease-in-out rounded-full`}
+                    className={`block px-4 py-2 ${textColor} ${hoverBg}`}
                     onClick={() => setMenuOpen(false)}
                   >
                     Settings
                   </Link>
                   <button
                     onClick={() => {
-                      userLogout();
+                      userLogOutAxios();
                       setMenuOpen(false);
                     }}
-                    className={`w-full text-left px-4 py-2 ${textColor} ${hoverBg} transition-colors duration-500 ease-in-out rounded-full`}
+                    className={`w-full text-left px-4 py-2 ${textColor} ${hoverBg}`}
                   >
                     Log out
                   </button>
@@ -128,16 +141,17 @@ const NavBar: React.FC = () => {
             </div>
           </>
         ) : (
+          // Not logged in
           <div className="flex items-center space-x-3">
             <Link
               to="/login"
-              className={`px-5 py-2 rounded-full border ${textColor} ${buttonBg} ${hoverBg} transition-colors duration-500 ease-in-out`}
+              className={`px-5 py-2 rounded-full border ${textColor} ${buttonBg} ${hoverBg}`}
             >
               Login
             </Link>
             <Link
               to="/register"
-              className={`px-5 py-2 rounded-full border ${textColor} ${buttonBg} ${hoverBg} transition-colors duration-500 ease-in-out`}
+              className={`px-5 py-2 rounded-full border ${textColor} ${buttonBg} ${hoverBg}`}
             >
               Register
             </Link>

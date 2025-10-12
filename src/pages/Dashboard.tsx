@@ -1,66 +1,65 @@
-import { useState } from "react";
-import type { FileHeaderProps } from "../components/FileShow";
-import { FileHeader } from "../components/FileShow";
-import { useThemeStore } from "../stores/ThemeStore";
-import { useNavigate } from "react-router-dom"; // 👈 for routing
+import { useState } from 'react';
+import type { FileHeaderProps } from '../components/FileShow';
+import { FileHeader } from '../components/FileShow';
+import { useThemeStore } from '../stores/ThemeStore';
+import { useNavigate } from 'react-router-dom';
 
 const DashBoard: React.FC = () => {
   const { theme, toggleTheme } = useThemeStore();
   const navigate = useNavigate();
 
-  const isLight = theme === "light";
+  const isLight = theme === 'light';
 
   const [files, setFiles] = useState<FileHeaderProps[]>([
     {
-      fileName: "Project Plan.pdf",
-      createdAt: "2025-10-12",
+      fileName: 'Project Plan.pdf',
+      createdAt: '2025-10-12',
       members: [
-        { id: 1, username: "Alice", avatar: "https://i.pravatar.cc/40?img=1" },
-        { id: 2, username: "Bob", avatar: "https://i.pravatar.cc/40?img=2" },
-        { id: 3, username: "Charlie", avatar: "https://i.pravatar.cc/40?img=3" },
+        { id: 1, username: 'Alice', avatar: 'https://i.pravatar.cc/40?img=1' },
+        { id: 2, username: 'Bob', avatar: 'https://i.pravatar.cc/40?img=2' },
+        { id: 3, username: 'Charlie', avatar: 'https://i.pravatar.cc/40?img=3' },
       ],
     },
     {
-      fileName: "Design Notes.txt",
-      createdAt: "2025-10-10",
+      fileName: 'Design Notes.txt',
+      createdAt: '2025-10-10',
       members: [
-        { id: 4, username: "Diana", avatar: "https://i.pravatar.cc/40?img=4" },
-        { id: 5, username: "Ethan", avatar: "https://i.pravatar.cc/40?img=5" },
+        { id: 4, username: 'Diana', avatar: 'https://i.pravatar.cc/40?img=4' },
+        { id: 5, username: 'Ethan', avatar: 'https://i.pravatar.cc/40?img=5' },
       ],
     },
   ]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [newFileName, setNewFileName] = useState("");
+  const [newFileName, setNewFileName] = useState('');
 
   const handleCreate = () => {
     if (!newFileName.trim()) return;
     const newFile: FileHeaderProps = {
       fileName: newFileName,
-      createdAt: new Date().toISOString().split("T")[0],
+      createdAt: new Date().toISOString().split('T')[0],
       members: [
         {
           id: Math.random(),
-          username: "New User",
-          avatar: "https://i.pravatar.cc/40?img=8",
+          username: 'New User',
+          avatar: 'https://i.pravatar.cc/40?img=8',
         },
       ],
     };
-    setFiles((prev) => [...prev, newFile]);
-    setNewFileName("");
+    setFiles(prev => [...prev, newFile]);
+    setNewFileName('');
     setIsModalOpen(false);
   };
 
   // 🎨 Theme styles
-  const bgColor = isLight ? "bg-gray-50" : "bg-gray-900";
-  const textColor = isLight ? "text-gray-900" : "text-gray-100";
+  const bgColor = isLight ? 'bg-gray-50' : 'bg-gray-900';
+  const textColor = isLight ? 'text-gray-900' : 'text-gray-100';
 
   return (
     <div
       className={`relative min-h-screen ${bgColor} ${textColor} p-8 transition-colors duration-300`}
     >
       {/* Header Section */}
-      
 
       {/* Files List */}
       <div className="space-y-3">
@@ -89,22 +88,20 @@ const DashBoard: React.FC = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 transition-opacity">
           <div
             className={`rounded-lg shadow-lg w-96 p-6 ${
-              isLight ? "bg-white text-gray-900" : "bg-gray-800 text-white"
+              isLight ? 'bg-white text-gray-900' : 'bg-gray-800 text-white'
             }`}
           >
-            <h2 className="text-lg font-semibold mb-4">
-              Create New Document
-            </h2>
+            <h2 className="text-lg font-semibold mb-4">Create New Document</h2>
 
             <input
               type="text"
               placeholder="Enter document name..."
               value={newFileName}
-              onChange={(e) => setNewFileName(e.target.value)}
+              onChange={e => setNewFileName(e.target.value)}
               className={`w-full border rounded px-3 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                 isLight
-                  ? "border-gray-300 bg-white text-gray-900"
-                  : "border-gray-600 bg-gray-700 text-white"
+                  ? 'border-gray-300 bg-white text-gray-900'
+                  : 'border-gray-600 bg-gray-700 text-white'
               }`}
             />
 
@@ -112,9 +109,7 @@ const DashBoard: React.FC = () => {
               <button
                 onClick={() => setIsModalOpen(false)}
                 className={`px-4 py-2 rounded transition ${
-                  isLight
-                    ? "bg-gray-300 hover:bg-gray-400"
-                    : "bg-gray-600 hover:bg-gray-500"
+                  isLight ? 'bg-gray-300 hover:bg-gray-400' : 'bg-gray-600 hover:bg-gray-500'
                 }`}
               >
                 Cancel

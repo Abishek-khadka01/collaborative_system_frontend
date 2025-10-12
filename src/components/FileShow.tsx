@@ -7,7 +7,7 @@ interface Member {
   avatar: string;
 }
 
-interface FileHeaderProps {
+export interface FileHeaderProps {
   fileName: string;
   members: Member[];
   createdAt: string;

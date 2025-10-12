@@ -6,7 +6,7 @@ const AuthRoute = () => {
   const { user } = useUserStore();
   const navigate = useNavigate();
   useEffect(() => {
-    if (!user.id) {
+    if (!user.id || !user.email) {
       // i.e The user is not logged in
       navigate('/');
     }

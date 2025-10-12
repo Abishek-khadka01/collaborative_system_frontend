@@ -8,6 +8,7 @@ import DocumentNavbar from '../pages/Docs/DocNavbar';
 import AuthRoute from './AuthRoute';
 import { DummyFileHeader } from '../components/FileShow';
 import LandingPage from '../pages/LandingPage';
+import DashBoard from '../pages/Dashboard';
 
 export default function AppRoute() {
   return (
@@ -15,9 +16,10 @@ export default function AppRoute() {
       <Route path="/" element={<AuthRoute />} errorElement={<ErrorPage />}>
         <Route path="/register" element={<UserRegister />}></Route>
         <Route path="/" element={<LandingPage />}></Route>
-        <Route path="/dashboard" element={<DocPage />}></Route>
+        <Route path="/dashboard" element={<DashBoard />}></Route>
         <Route path="/login" element={<UserLogin />}></Route>
         <Route path="/navbar" element={<NavBar />}></Route>
+        <Route path="/document/:id" element={<DocPage />}></Route>
         <Route path="/doc-navbar" element={<DocumentNavbar />}></Route>
       </Route>
 
