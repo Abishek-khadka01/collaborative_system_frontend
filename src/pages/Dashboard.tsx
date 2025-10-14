@@ -3,6 +3,8 @@ import type { FileHeaderProps } from '../components/FileShow';
 import { FileHeader } from '../components/FileShow';
 import { useThemeStore } from '../stores/ThemeStore';
 import { useNavigate } from 'react-router-dom';
+import axios from "../apis/interceptor"
+import { CREATE_DOCUMENT, DOCUMENTS } from '../apis/Endpoints';
 
 const DashBoard: React.FC = () => {
   const { theme, toggleTheme } = useThemeStore();
@@ -33,7 +35,7 @@ const DashBoard: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newFileName, setNewFileName] = useState('');
 
-  const handleCreate = () => {
+  const handleCreate = async () => {
     if (!newFileName.trim()) return;
     const newFile: FileHeaderProps = {
       fileName: newFileName,
@@ -49,9 +51,24 @@ const DashBoard: React.FC = () => {
     setFiles(prev => [...prev, newFile]);
     setNewFileName('');
     setIsModalOpen(false);
+
+    try {
+      const message = await axios.post(`${DOCUMENTS}${CREATE_DOCUMENT}`, {
+        DocumentName :  newFileName
+      })
+      console.table(message.data)
+      if(message.status==200){
+        alert(`the document is created successfully`)
+      }
+
+
+    } catch (error) {
+      console.error(`Error in creating the document ${error}`);
+    }
+    
   };
 
-  // 🎨 Theme styles
+  
   const bgColor = isLight ? 'bg-gray-50' : 'bg-gray-900';
   const textColor = isLight ? 'text-gray-900' : 'text-gray-100';
 
@@ -59,7 +76,7 @@ const DashBoard: React.FC = () => {
     <div
       className={`relative min-h-screen ${bgColor} ${textColor} p-8 transition-colors duration-300`}
     >
-      {/* Header Section */}
+
 
       {/* Files List */}
       <div className="space-y-3">
