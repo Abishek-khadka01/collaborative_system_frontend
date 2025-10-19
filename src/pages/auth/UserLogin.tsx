@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import Joi, { string } from 'joi';
+import Joi  from 'joi';
 import { useThemeStore } from '../../stores/ThemeStore';
 import axios from '../../apis/interceptor';
 import { LOGIN, USERS } from '../../apis/Endpoints';
@@ -51,7 +51,9 @@ const UserLogin: React.FC = () => {
         password,
       })) as AxiosResponseType;
       console.table(data.data.data);
-      const { username, accessToken, email: Email, role, profilePicture, id } = data.data.data;
+      const { username, accessToken, email: Email,
+        //  role,
+          profilePicture, id } = data.data.data;
 
       if (data.status == 200) {
         userLogin({

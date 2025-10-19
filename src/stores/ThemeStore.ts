@@ -16,7 +16,7 @@ const initialState = {
 
 export const useThemeStore = create<ThemeStoreState>()(
   persist(
-    (set, get) => ({
+    (set, _) => ({
       ...initialState,
       setTheme: (theme: Theme) => set({ theme }),
       toggleTheme: () =>

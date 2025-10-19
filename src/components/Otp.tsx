@@ -58,7 +58,7 @@ const Otp: React.FC = () => {
 
   // Optional: combine OTP into a single string
   const otpValue = otp.join('');
-
+  console.log(otpValue);
   return (
     <div className="flex space-x-2 justify-center">
       {otp.map((digit, idx) => (

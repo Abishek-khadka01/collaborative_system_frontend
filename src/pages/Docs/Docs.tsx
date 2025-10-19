@@ -11,7 +11,7 @@ import { useUserStore } from '../../stores/UserStore';
 import * as Y from 'yjs';
 import { WebsocketProvider } from 'y-websocket';
 import { QuillBinding } from 'y-quill';
-import { IndexeddbPersistence } from 'y-indexeddb';
+// import { IndexeddbPersistence } from 'y-indexeddb';
 import { useParams } from 'react-router-dom';
 
 // Register Quill modules
@@ -29,8 +29,8 @@ const DocPage: React.FC = () => {
   const { user } = useUserStore();
   const { theme } = useThemeStore();
   const [content, setContent] = useState<string>('Start Typing');
-  const [fontSize, setFontSize] = useState<string>('text-base');
-
+  // const [fontSize, setFontSize] = useState<string>('text-base');
+  const fontSize = 'text-base';
   // Typed refs
   const quillRef = useRef<ReactQuill | null>(null);
   const ydocRef = useRef<Y.Doc>(new Y.Doc());

@@ -1,6 +1,4 @@
 // JoinRequest.jsx
-import React from 'react';
-
 type JoinRequestType = {
   username: string;
   onAccept: () => void;

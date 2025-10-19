@@ -5,10 +5,10 @@ import { useThemeStore } from '../stores/ThemeStore';
 import { useNavigate } from 'react-router-dom';
 import axios from "../apis/interceptor"
 import { CREATE_DOCUMENT, DOCUMENTS } from '../apis/Endpoints';
-import { useDocumentStore } from '../stores/DocumentStore';
+// import { useDocumentStore } from '../stores/DocumentStore';
 const DashBoard: React.FC = () => {
-  const { theme, toggleTheme } = useThemeStore();
-  const addDocument = useDocumentStore((state)=>state.addDocument);
+  const { theme  } = useThemeStore();
+  // const addDocument = useDocumentStore((state)=>state.addDocument);
   const navigate = useNavigate();
 
   const isLight = theme === 'light';

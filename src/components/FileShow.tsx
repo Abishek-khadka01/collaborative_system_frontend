@@ -16,7 +16,7 @@ export interface FileHeaderProps {
 
 const FileHeader: React.FC<FileHeaderProps> = ({ id ,  fileName, members, createdAt }) => {
   const { theme } = useThemeStore();
-
+  console.log(id)
   const bgColor = theme === 'light' ? 'bg-gray-100' : 'bg-gray-900';
   const textColor = theme === 'light' ? 'text-gray-800' : 'text-white';
   const borderColor = theme === 'light' ? 'border-gray-300' : 'border-white';
