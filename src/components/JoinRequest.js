@@ -1,5 +1,0 @@
-import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
-const JoinRequest = ({ username, onAccept, onReject }) => {
-    return (_jsxs("div", { className: "max-w-sm mx-auto mt-6 p-4 bg-white shadow-lg rounded-lg border border-gray-200", children: [_jsxs("div", { className: "flex items-center space-x-4", children: [_jsx("div", { className: "w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 text-xl", children: username[0].toUpperCase() }), _jsx("div", { className: "flex-1", children: _jsxs("p", { className: "text-gray-700 font-medium", children: [username, " wants to join the document"] }) })] }), _jsxs("div", { className: "mt-4 flex justify-end space-x-2", children: [_jsx("button", { onClick: onReject, className: "px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition", children: "Reject" }), _jsx("button", { onClick: onAccept, className: "px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition", children: "Accept" })] })] }));
-};
-export default JoinRequest;
