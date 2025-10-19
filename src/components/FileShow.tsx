@@ -8,12 +8,13 @@ interface Member {
 }
 
 export interface FileHeaderProps {
+  id : string 
   fileName: string;
   members: Member[];
   createdAt: string;
 }
 
-const FileHeader: React.FC<FileHeaderProps> = ({ fileName, members, createdAt }) => {
+const FileHeader: React.FC<FileHeaderProps> = ({ id ,  fileName, members, createdAt }) => {
   const { theme } = useThemeStore();
 
   const bgColor = theme === 'light' ? 'bg-gray-100' : 'bg-gray-900';
@@ -62,7 +63,7 @@ const DummyFileHeader: React.FC = () => {
     { id: 4, username: 'David', avatar: 'https://i.pravatar.cc/150?img=4' },
   ];
 
-  return <FileHeader fileName="MyDocument.txt" members={dummyMembers} createdAt="Oct 4, 2025" />;
+  return <FileHeader id='1' fileName="MyDocument.txt" members={dummyMembers} createdAt="Oct 4, 2025" />;
 };
 
 export { FileHeader, DummyFileHeader };

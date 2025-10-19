@@ -5,39 +5,33 @@ import { useThemeStore } from '../stores/ThemeStore';
 import { useNavigate } from 'react-router-dom';
 import axios from "../apis/interceptor"
 import { CREATE_DOCUMENT, DOCUMENTS } from '../apis/Endpoints';
-
+import { useDocumentStore } from '../stores/DocumentStore';
 const DashBoard: React.FC = () => {
   const { theme, toggleTheme } = useThemeStore();
+  const addDocument = useDocumentStore((state)=>state.addDocument);
   const navigate = useNavigate();
 
   const isLight = theme === 'light';
 
-  const [files, setFiles] = useState<FileHeaderProps[]>([
-    {
-      fileName: 'Project Plan.pdf',
-      createdAt: '2025-10-12',
-      members: [
-        { id: 1, username: 'Alice', avatar: 'https://i.pravatar.cc/40?img=1' },
-        { id: 2, username: 'Bob', avatar: 'https://i.pravatar.cc/40?img=2' },
-        { id: 3, username: 'Charlie', avatar: 'https://i.pravatar.cc/40?img=3' },
-      ],
-    },
-    {
-      fileName: 'Design Notes.txt',
-      createdAt: '2025-10-10',
-      members: [
-        { id: 4, username: 'Diana', avatar: 'https://i.pravatar.cc/40?img=4' },
-        { id: 5, username: 'Ethan', avatar: 'https://i.pravatar.cc/40?img=5' },
-      ],
-    },
-  ]);
+  const [files, setFiles] = useState<FileHeaderProps[]>([]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newFileName, setNewFileName] = useState('');
 
   const handleCreate = async () => {
     if (!newFileName.trim()) return;
-    const newFile: FileHeaderProps = {
+    
+
+    try {
+      const message = await axios.post(`${DOCUMENTS}${CREATE_DOCUMENT}`, {
+        DocumentName :  newFileName
+      })
+      console.table(message.data)
+      if(message.status==200){
+        alert(`the document is created successfully`);
+        console.table(message.data);
+        const newFile: FileHeaderProps = {
+          id : message.data.id as string , 
       fileName: newFileName,
       createdAt: new Date().toISOString().split('T')[0],
       members: [
@@ -52,13 +46,6 @@ const DashBoard: React.FC = () => {
     setNewFileName('');
     setIsModalOpen(false);
 
-    try {
-      const message = await axios.post(`${DOCUMENTS}${CREATE_DOCUMENT}`, {
-        DocumentName :  newFileName
-      })
-      console.table(message.data)
-      if(message.status==200){
-        alert(`the document is created successfully`)
       }
 
 

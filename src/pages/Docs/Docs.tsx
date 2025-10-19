@@ -12,6 +12,7 @@ import * as Y from 'yjs';
 import { WebsocketProvider } from 'y-websocket';
 import { QuillBinding } from 'y-quill';
 import { IndexeddbPersistence } from 'y-indexeddb';
+import { useParams } from 'react-router-dom';
 
 // Register Quill modules
 Quill.register('modules/imageResize', QuillResizeImage);
@@ -23,7 +24,8 @@ interface AwarenessUser {
 }
 
 const DocPage: React.FC = () => {
-  const roomName = 'my-room-name';
+  const roomName = useParams().id;
+  console.log(roomName)
   const { user } = useUserStore();
   const { theme } = useThemeStore();
   const [content, setContent] = useState<string>('Start Typing');
@@ -41,7 +43,7 @@ const DocPage: React.FC = () => {
   useEffect(() => {
     const doc = ydocRef.current;
 
-    const provider = new WebsocketProvider('ws://localhost:4000', roomName, doc);
+    const provider = new WebsocketProvider('ws://localhost:4000', roomName as string , doc);
     providerRef.current = provider;
 
     provider.on('status', (event: { status: string }) => {
@@ -54,11 +56,7 @@ const DocPage: React.FC = () => {
       color: randomHexColor(),
     } as AwarenessUser);
 
-    const persistence = new IndexeddbPersistence(roomName, doc);
-    persistence.once('synced', () => {
-      console.log('IndexedDB synced ✅');
-    });
-
+   
     return () => {
       provider.disconnect();
       doc.destroy();
