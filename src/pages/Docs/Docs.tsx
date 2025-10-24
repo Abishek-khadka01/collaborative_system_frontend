@@ -3,16 +3,16 @@ import ReactQuill, { Quill } from 'react-quill';
 import QuillResizeImage from 'quill-resize-image';
 import QuillCursors from 'quill-cursors';
 import 'react-quill/dist/quill.snow.css';
-
+import axios from '../../apis/interceptor';
 import DocumentToolbar from './DocNavbar';
 import { useThemeStore } from '../../stores/ThemeStore';
 import { useUserStore } from '../../stores/UserStore';
-
 import * as Y from 'yjs';
 import { WebsocketProvider } from 'y-websocket';
 import { QuillBinding } from 'y-quill';
-// import { IndexeddbPersistence } from 'y-indexeddb';
 import { useParams } from 'react-router-dom';
+import { DOCUMENTS } from '../../apis/Endpoints';
+import { GetDocumentContent } from './DocsFunctions';
 
 // Register Quill modules
 Quill.register('modules/imageResize', QuillResizeImage);
@@ -24,26 +24,33 @@ interface AwarenessUser {
 }
 
 const DocPage: React.FC = () => {
-  const roomName = useParams().id;
-  console.log(roomName)
+  const { id: roomName } = useParams<{ id: string }>();
   const { user } = useUserStore();
   const { theme } = useThemeStore();
   const [content, setContent] = useState<string>('Start Typing');
-  // const [fontSize, setFontSize] = useState<string>('text-base');
-  const fontSize = 'text-base';
-  // Typed refs
+
   const quillRef = useRef<ReactQuill | null>(null);
   const ydocRef = useRef<Y.Doc>(new Y.Doc());
   const providerRef = useRef<WebsocketProvider | null>(null);
 
-  // Yjs shared text
   const yText = ydocRef.current.getText('quill');
 
-  // Setup Yjs WebSocket + IndexedDB (runs once)
+  // Helper: base64 → Uint8Array
+  const base64ToUint8Array = (base64: string): Uint8Array => {
+    const binary = atob(base64);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) {
+      bytes[i] = binary.charCodeAt(i);
+    }
+    return bytes;
+  };
+
+ 
+
+  // Initialize Yjs WebSocket provider
   useEffect(() => {
     const doc = ydocRef.current;
-
-    const provider = new WebsocketProvider('ws://localhost:4000', roomName as string , doc);
+    const provider = new WebsocketProvider('ws://localhost:4000', roomName as string, doc);
     providerRef.current = provider;
 
     provider.on('status', (event: { status: string }) => {
@@ -52,17 +59,36 @@ const DocPage: React.FC = () => {
 
     const awareness = provider.awareness;
     awareness.setLocalStateField('user', {
-      name: user?.username || 'Abishek Khadka',
+      name: user?.username || 'Anonymous',
       color: randomHexColor(),
     } as AwarenessUser);
 
-   
     return () => {
       provider.disconnect();
       doc.destroy();
     };
   }, [roomName, user?.username]);
 
+  // Apply stored Yjs document after WebSocket sync
+  useEffect(() => {
+    const fetchAndApply = async () => {
+      const operations = await GetDocumentContent(roomName as string );
+      if (!operations) return ;
+      
+      const provider = providerRef.current;
+      if (!provider) return;
+
+      // Wait until WebSocket sync is done to prevent overwrite
+      provider.once('sync', () => {
+        const updateBuffer = base64ToUint8Array(operations);
+        Y.applyUpdate(ydocRef.current, updateBuffer);
+        console.log('Yjs content restored from backend ✅');
+      });
+    };
+    fetchAndApply();
+  }, [roomName]);
+
+  // Quill-Yjs binding and remote cursors
   useEffect(() => {
     if (!quillRef.current || !providerRef.current) return;
 
@@ -71,20 +97,15 @@ const DocPage: React.FC = () => {
     const awareness = provider.awareness;
 
     const binding = new QuillBinding(yText, editor, awareness);
-
     const cursors: any = editor.getModule('cursors');
 
-    // Render remote users
     const renderRemoteCursors = () => {
       cursors.clearCursors();
       awareness.getStates().forEach((state, clientId) => {
         const userInfo = (state as any).user as AwarenessUser | undefined;
         if (!userInfo) return;
-
-        // Show only remote users
         if (clientId !== awareness.clientID) {
           cursors.createCursor(String(clientId), userInfo.name, userInfo.color);
-        } else {
         }
       });
     };
@@ -96,9 +117,9 @@ const DocPage: React.FC = () => {
       awareness.off('update', renderRemoteCursors);
       cursors.clearCursors();
     };
-  }, [quillRef.current, providerRef.current]);
+  }, [yText]);
 
-  // Quill modules
+  // Quill toolbar and modules
   const modules = {
     toolbar: [
       [{ size: ['small', false, 'large', 'huge'] }],
@@ -140,7 +161,7 @@ const DocPage: React.FC = () => {
             [&_.ql-toolbar]:flex [&_.ql-toolbar]:gap-3
             [&_.ql-toolbar_button]:w-10 [&_.ql-toolbar_button]:h-10 [&_.ql-toolbar_button]:p-2 [&_.ql-toolbar_button]:rounded-lg
             [&_.ql-toolbar_button_svg]:w-6 [&_.ql-toolbar_button_svg]:h-6
-            ${fontSize}
+            text-base
             ${theme === 'dark' ? 'ql-dark' : ''}
           `}
         />
@@ -159,7 +180,6 @@ function randomHexColor(): string {
   const blue = Math.floor(Math.random() * 256)
     .toString(16)
     .padStart(2, '0');
-
   return `#${red}${green}${blue}`;
 }
 

@@ -8,3 +8,4 @@ export const USERS = '/users';
 // DOCUMENTS
 export const CREATE_DOCUMENT = '/create-document'
 export const DOCUMENTS = '/documents'
+export const UPDATE_DOCUMENT = '/update-document'
