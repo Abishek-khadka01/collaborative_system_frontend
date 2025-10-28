@@ -39,11 +39,11 @@ const DocPage: React.FC = () => {
   // Yjs shared text
   const yText = ydocRef.current.getText('quill');
 
-  // Setup Yjs WebSocket + IndexedDB (runs once)
+
   useEffect(() => {
     const doc = ydocRef.current;
 
-    const provider = new WebsocketProvider('ws://localhost:4000', roomName as string , doc);
+    const provider = new WebsocketProvider(`ws://localhost:4000/documents/${user.accessToken}`, roomName as string , doc);
     providerRef.current = provider;
 
     provider.on('status', (event: { status: string }) => {

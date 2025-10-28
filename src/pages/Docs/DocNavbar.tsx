@@ -1,12 +1,18 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useThemeStore } from '../../stores/ThemeStore';
+import UserSearchInput, {type UserType} from '../../components/AddMember';
+
+const allUsers: UserType[] = [
+  { id: 1, username: 'John Doe', email: 'john@example.com', profile: 'https://i.pravatar.cc/40?img=1' },
+  { id: 2, username: 'Jane Smith', email: 'jane@example.com', profile: 'https://i.pravatar.cc/40?img=2' },
+  { id: 3, username: 'Doe Ray', email: 'doe@example.com', profile: 'https://i.pravatar.cc/40?img=3' },
+];
 
 const onlineMembers = [
   {
     id: 1,
     username: 'Alice',
-    avatar:
-      'https://t4.ftcdn.net/jpg/16/90/93/63/240_F_1690936360_j3C0S6h9mMYDVmezy3EOHkPakUZmjfxw.jpg',
+    avatar: 'https://t4.ftcdn.net/jpg/16/90/93/63/240_F_1690936360_j3C0S6h9mMYDVmezy3EOHkPakUZmjfxw.jpg',
   },
   { id: 2, username: 'Bob', avatar: '/avatars/bob.png' },
   { id: 3, username: 'Charlie', avatar: '/avatars/charlie.png' },
@@ -14,17 +20,25 @@ const onlineMembers = [
   { id: 5, username: 'Eva', avatar: '/avatars/eva.png' },
 ];
 
+interface Member {
+  id: number;
+  username: string;
+  avatar?: string;
+}
+
 const DocumentToolbar: React.FC = () => {
   const { theme } = useThemeStore();
+  const [members, setMembers] = useState<Member[]>([]);
+  const [showAddMemberModal, setShowAddMemberModal] = useState(false);
   const [showMembersDropdown, setShowMembersDropdown] = useState(false);
   const [fileName, setFileName] = useState('MyDocument.txt');
   const [editingName, setEditingName] = useState(false);
+
   const inputRef = useRef<HTMLInputElement | null>(null);
   const membersRef = useRef<HTMLDivElement | null>(null);
 
   const bgColor = theme === 'light' ? 'bg-white' : 'bg-gray-900';
   const textColor = theme === 'light' ? 'text-gray-800' : 'text-gray-100';
-  const iconColor = theme === 'light' ? 'text-gray-800' : 'text-gray-100';
   const hoverBg = theme === 'light' ? 'hover:bg-gray-100' : 'hover:bg-gray-800';
   const plusBg = theme === 'light' ? 'bg-gray-300' : 'bg-gray-600';
   const tooltipBg = theme === 'light' ? 'bg-gray-800 text-white' : 'bg-gray-700 text-white';
@@ -116,7 +130,7 @@ const DocumentToolbar: React.FC = () => {
     },
     {
       name: 'Add Members',
-      onClick: () => alert('Add Members clicked'),
+      onClick: () => setShowAddMemberModal(true),
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -132,7 +146,7 @@ const DocumentToolbar: React.FC = () => {
     },
     {
       name: 'Members',
-      onClick: () => setShowMembersDropdown(s => !s),
+      onClick: () => setShowMembersDropdown((s) => !s),
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -182,33 +196,39 @@ const DocumentToolbar: React.FC = () => {
     }
   };
 
+  // Add member from UserSearchInput
+  const handleAddMember = (user: UserType) => {
+    if (members.find((m) => m.id === user.id)) return;
+    setMembers((prev) => [...prev, { id: user.id, username: user.username, avatar: user.profile }]);
+    setShowAddMemberModal(false);
+  };
+
   return (
-    <div
-      className={`flex items-center justify-between px-4 py-2 ${bgColor} shadow-md ${transitionAll}`}
-    >
+    <div className={`flex items-center justify-between px-4 py-2 ${bgColor} shadow-md ${transitionAll}`}>
+
+      {/* Toolbar Buttons */}
       <div className="flex items-center gap-2">
-        {toolbarButtons.map(btn => (
+        {toolbarButtons.map((btn) => (
           <button
             key={btn.name}
             onClick={btn.onClick}
             className={`group flex flex-col items-center gap-1 p-2 rounded ${hoverBg} ${transitionAll}`}
           >
-            <div className={`${iconColor} ${transitionAll} transform`}>{btn.icon}</div>
-            <span
-              className={`${textColor} mt-1 text-xs text-center opacity-0 group-hover:opacity-100 ${transitionAll}`}
-            >
+            <div className={`${textColor} ${transitionAll} transform`}>{btn.icon}</div>
+            <span className={`${textColor} mt-1 text-xs text-center opacity-0 group-hover:opacity-100 ${transitionAll}`}>
               {btn.name}
             </span>
           </button>
         ))}
       </div>
 
+      {/* Document Name */}
       <div className="flex-1 flex justify-center px-4">
         {editingName ? (
           <input
             ref={inputRef}
             value={fileName}
-            onChange={e => setFileName(e.target.value)}
+            onChange={(e) => setFileName(e.target.value)}
             onKeyDown={handleFileNameKey}
             onBlur={() => setEditingName(false)}
             className={`text-center w-[200px] px-2 py-1 rounded border focus:outline-none
@@ -216,26 +236,18 @@ const DocumentToolbar: React.FC = () => {
               ${transitionAll}`}
           />
         ) : (
-          <span
-            className={`${textColor} font-semibold truncate block text-center ${transitionAll}`}
-            title={fileName}
-          >
+          <span className={`${textColor} font-semibold truncate block text-center ${transitionAll}`} title={fileName}>
             {fileName}
           </span>
         )}
       </div>
 
+      {/* Members Avatars */}
       <div className="flex items-center gap-2">
-        {displayedMembers.map(m => (
+        {displayedMembers.map((m) => (
           <div key={m.id} className="relative group">
-            <img
-              src={m.avatar}
-              alt={m.username}
-              className="h-8 w-8 rounded-full object-cover cursor-pointer"
-            />
-            <div
-              className={`absolute left-1/2 -translate-x-1/2 top-full mt-2 px-2 py-1 text-xs rounded ${tooltipBg} opacity-0 group-hover:opacity-100 pointer-events-none ${transitionAll}`}
-            >
+            <img src={m.avatar} alt={m.username} className="h-8 w-8 rounded-full object-cover cursor-pointer" />
+            <div className={`absolute left-1/2 -translate-x-1/2 top-full mt-2 px-2 py-1 text-xs rounded ${tooltipBg} opacity-0 group-hover:opacity-100 ${transitionAll}`}>
               {m.username}
             </div>
           </div>
@@ -244,29 +256,18 @@ const DocumentToolbar: React.FC = () => {
         {extraCount > 0 && (
           <div className="relative" ref={membersRef}>
             <button
-              onClick={() => setShowMembersDropdown(s => !s)}
+              onClick={() => setShowMembersDropdown((s) => !s)}
               className={`h-8 w-8 flex items-center justify-center rounded-full ${plusBg} text-white text-xs ${transitionAll}`}
             >
               +{extraCount}
             </button>
             {showMembersDropdown && (
-              <div
-                className={`absolute right-0 mt-2 w-56 ${bgColor} shadow-lg rounded-md p-2 ${transitionAll} z-50`}
-              >
+              <div className={`absolute right-0 mt-2 w-56 ${bgColor} shadow-lg rounded-md p-2 ${transitionAll} z-50`}>
                 <div className="max-h-64 overflow-auto">
-                  {onlineMembers.map(member => (
-                    <div
-                      key={member.id}
-                      className={`flex items-center gap-2 px-2 py-1 rounded ${itemHoverBg} cursor-pointer ${transitionAll}`}
-                    >
-                      <img
-                        src={member.avatar}
-                        alt={member.username}
-                        className="h-8 w-8 rounded-full object-cover"
-                      />
-                      <div className={`${textColor} text-sm ${transitionAll}`}>
-                        {member.username}
-                      </div>
+                  {onlineMembers.map((member) => (
+                    <div key={member.id} className={`flex items-center gap-2 px-2 py-1 rounded ${itemHoverBg} cursor-pointer ${transitionAll}`}>
+                      <img src={member.avatar} alt={member.username} className="h-8 w-8 rounded-full object-cover" />
+                      <div className={`${textColor} text-sm ${transitionAll}`}>{member.username}</div>
                     </div>
                   ))}
                 </div>
@@ -275,6 +276,24 @@ const DocumentToolbar: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Add Member Modal */}
+      {showAddMemberModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-start pt-20 z-50">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-96">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-semibold">Add Member</h2>
+              <button onClick={() => setShowAddMemberModal(false)} className="text-gray-500 hover:text-gray-700">&times;</button>
+            </div>
+            <UserSearchInput
+              users={allUsers}
+              onAdd={handleAddMember}
+              placeholder="Search by email..."
+            />
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };

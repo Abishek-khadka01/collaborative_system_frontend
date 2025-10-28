@@ -9,6 +9,7 @@ import AuthRoute from './AuthRoute';
 import { DummyFileHeader } from '../components/FileShow';
 import LandingPage from '../pages/LandingPage';
 import DashBoard from '../pages/Dashboard';
+import UserSearch from '../components/UserSearch';
 
 export default function AppRoute() {
   return (
@@ -23,7 +24,7 @@ export default function AppRoute() {
         <Route path="/doc-navbar" element={<DocumentNavbar />}></Route>
       </Route>
 
-      <Route path="/check" element={<DummyFileHeader />}></Route>
+      <Route path="/check" element={<UserSearch />}></Route>
     </Routes>
   );
 }
