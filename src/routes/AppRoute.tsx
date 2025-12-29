@@ -4,9 +4,9 @@ import ErrorPage from '../common/ErrorPage';
 import UserRegister from '../pages/auth/UserRegister';
 import DocPage from '../pages/Docs/Docs';
 import NavBar from '../components/NavBar';
-import DocumentNavbar from '../pages/Docs/DocNavbar';
+
 import AuthRoute from './AuthRoute';
-import { DummyFileHeader } from '../components/FileShow';
+
 import LandingPage from '../pages/LandingPage';
 import DashBoard from '../pages/Dashboard';
 import UserSearch from '../components/UserSearch';
@@ -21,7 +21,7 @@ export default function AppRoute() {
         <Route path="/login" element={<UserLogin />}></Route>
         <Route path="/navbar" element={<NavBar />}></Route>
         <Route path="/document/:id" element={<DocPage />}></Route>
-        <Route path="/doc-navbar" element={<DocumentNavbar />}></Route>
+      
       </Route>
 
       <Route path="/check" element={<UserSearch />}></Route>

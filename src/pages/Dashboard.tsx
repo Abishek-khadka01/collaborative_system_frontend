@@ -1,76 +1,94 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { FileHeaderProps } from '../components/FileShow';
 import { FileHeader } from '../components/FileShow';
 import { useThemeStore } from '../stores/ThemeStore';
 import { useNavigate } from 'react-router-dom';
-import axios from "../apis/interceptor"
+import axios from "../apis/interceptor";
 import { CREATE_DOCUMENT, DOCUMENTS } from '../apis/Endpoints';
-// import { useDocumentStore } from '../stores/DocumentStore';
-const DashBoard: React.FC = () => {
-  const { theme  } = useThemeStore();
-  // const addDocument = useDocumentStore((state)=>state.addDocument);
-  const navigate = useNavigate();
 
+const DashBoard: React.FC = () => {
+  const { theme } = useThemeStore();
+  const navigate = useNavigate();
   const isLight = theme === 'light';
 
   const [files, setFiles] = useState<FileHeaderProps[]>([]);
-
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newFileName, setNewFileName] = useState('');
 
-  const handleCreate = async () => {
-    if (!newFileName.trim()) return;
-    
+  // Load all documents on mount
+  useEffect(() => {
+    loadAllDocuments();
+  }, []);
 
+  const loadAllDocuments = async () => {
     try {
-      const message = await axios.post(`${DOCUMENTS}${CREATE_DOCUMENT}`, {
-        DocumentName :  newFileName
-      })
-      console.table(message.data)
-      if(message.status==200){
-        alert(`the document is created successfully`);
-        console.table(message.data);
-        const newFile: FileHeaderProps = {
-          id : message.data.id as string , 
-      fileName: newFileName,
-      createdAt: new Date().toISOString().split('T')[0],
-      members: [
-        {
-          id: Math.random(),
-          username: 'New User',
-          avatar: 'https://i.pravatar.cc/40?img=8',
-        },
-      ],
-    };
-    setFiles(prev => [...prev, newFile]);
-    setNewFileName('');
-    setIsModalOpen(false);
+      const response = await axios.get(`${DOCUMENTS}`);
+      if (response.status === 200 && response.data.success) {
+        const docs = response.data.data;
 
+        const formattedFiles: FileHeaderProps[] = docs.map((doc: any) => ({
+          id: doc.id,
+          fileName: doc.documentname,
+          createdAt: doc.createdat.split('T')[0],
+          members: doc.DocumentMembers.map((member: any) => ({
+            id: member.User.id,
+            username: member.User.username,
+            avatar: member.User.profilepicture || `https://i.pravatar.cc/40?u=${member.User.id}`,
+          })),
+        }));
+
+        setFiles(formattedFiles);
       }
-
-
     } catch (error) {
-      console.error(`Error in creating the document ${error}`);
+      console.error('Error loading documents', error);
     }
-    
   };
 
-  
+  const handleCreate = async () => {
+    if (!newFileName.trim()) return;
+
+    try {
+      const response = await axios.post(`${DOCUMENTS}${CREATE_DOCUMENT}`, {
+        DocumentName: newFileName
+      });
+
+      if (response.status === 200 && response.data.success) {
+        alert(response.data.message);
+
+        const docData = response.data.data;
+
+        const newFile: FileHeaderProps = {
+          id: docData.id,
+          fileName: docData.documentname,
+          createdAt: docData.createdat.split('T')[0],
+          members: docData.DocumentMembers.map((member: any) => ({
+            id: member.User.id,
+            username: member.User.username,
+            avatar: member.User.profilepicture || `https://i.pravatar.cc/40?u=${member.User.id}`,
+          })),
+        };
+
+        setFiles(prev => [...prev, newFile]);
+        setNewFileName('');
+        setIsModalOpen(false);
+      }
+    } catch (error) {
+      console.error(`Error creating document: ${error}`);
+    }
+  };
+
   const bgColor = isLight ? 'bg-gray-50' : 'bg-gray-900';
   const textColor = isLight ? 'text-gray-900' : 'text-gray-100';
 
   return (
-    <div
-      className={`relative min-h-screen ${bgColor} ${textColor} p-8 transition-colors duration-300`}
-    >
-
-
+    <div className={`relative min-h-screen ${bgColor} ${textColor} p-8 transition-colors duration-300`}>
+      
       {/* Files List */}
       <div className="space-y-3">
-        {files.map((file, index) => (
+        {files.map((file) => (
           <div
-            key={index}
-            onClick={() => navigate(`/document/${index + 1}`)} // 👈 Redirect
+            key={file.id}
+            onClick={() => navigate(`/document/${file.id}`)}
             className="cursor-pointer hover:scale-[1.01] transform transition-transform"
           >
             <FileHeader {...file} />
@@ -90,11 +108,7 @@ const DashBoard: React.FC = () => {
       {/* Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 transition-opacity">
-          <div
-            className={`rounded-lg shadow-lg w-96 p-6 ${
-              isLight ? 'bg-white text-gray-900' : 'bg-gray-800 text-white'
-            }`}
-          >
+          <div className={`rounded-lg shadow-lg w-96 p-6 ${isLight ? 'bg-white text-gray-900' : 'bg-gray-800 text-white'}`}>
             <h2 className="text-lg font-semibold mb-4">Create New Document</h2>
 
             <input
@@ -103,18 +117,14 @@ const DashBoard: React.FC = () => {
               value={newFileName}
               onChange={e => setNewFileName(e.target.value)}
               className={`w-full border rounded px-3 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                isLight
-                  ? 'border-gray-300 bg-white text-gray-900'
-                  : 'border-gray-600 bg-gray-700 text-white'
+                isLight ? 'border-gray-300 bg-white text-gray-900' : 'border-gray-600 bg-gray-700 text-white'
               }`}
             />
 
             <div className="flex justify-end space-x-3">
               <button
                 onClick={() => setIsModalOpen(false)}
-                className={`px-4 py-2 rounded transition ${
-                  isLight ? 'bg-gray-300 hover:bg-gray-400' : 'bg-gray-600 hover:bg-gray-500'
-                }`}
+                className={`px-4 py-2 rounded transition ${isLight ? 'bg-gray-300 hover:bg-gray-400' : 'bg-gray-600 hover:bg-gray-500'}`}
               >
                 Cancel
               </button>
